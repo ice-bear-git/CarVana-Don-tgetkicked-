@@ -50,7 +50,6 @@ ax.spines["right"].set_visible(False)
 #We notice the most important auction house is Manheim
 
 #3. VehYear
-
 vehyear = train['VehYear'].hist(color=tableau20[10], alpha=0.5)
 plt.title('Vehicle count by year of production')
 plt.xlabel('Year')
@@ -62,8 +61,7 @@ ax.spines["right"].set_visible(False)
 
 #We notice the majority of vehicles is from 2006
 
-#3. VehAge
-
+#4. VehAge
 vehage = train['VehicleAge'].hist(color=tableau20[10], alpha=0.5)
 plt.title('Vehicle count by age')
 plt.xlabel('Age')
@@ -75,8 +73,7 @@ ax.spines["right"].set_visible(False)
 
 #We notice the majority of vehicles is 4 years old
 
-#4. VehOdo
-
+#5. VehOdo
 train['VehOdo'].plot(kind="kde", color=tableau20[2], alpha=0.5)
 plt.title('Odometer count by miles')
 plt.xlabel('Age')
