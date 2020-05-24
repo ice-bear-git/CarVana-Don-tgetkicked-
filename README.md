@@ -22,6 +22,8 @@ You can easily find the challenge's link here: https://www.kaggle.com/c/DontGetK
 
 9. Pattern-minig: we try to get some association rules (ARL) using fim library. 
 
+You can also find a detailed description in PDF (Italian).
+
 
 # Installation
 
