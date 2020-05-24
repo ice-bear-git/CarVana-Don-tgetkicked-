@@ -23,7 +23,7 @@ sum_null.index
 for name, num_na in zip(sum_null.index, train_for_nan):
     if num_na > 0:
         print("{}: {}".format(name, num_na))
-time.sleep(7)
+time.sleep(2)
 print('starting the cleaning process in 3...2...1...')
 
 #3. We search for patterns to eliminate all the NaN values
@@ -104,51 +104,42 @@ print('cleaning nan variables for Transmission variable...')
 train.loc[train['Transmission']=='Manual','Transmission'] = train.loc[train['Transmission']=='Manual','Transmission'].str.replace('Manual', 'MANUAL')
 
 #then, we do the same we did for other variables by model
-model_submodel_nan_transmission=train[train["Transmission"].isnull()][['Model','SubModel']]
-dataframe_for_tranmission_nan=train.loc[train['Model'].isin(model_submodel_nan_transmission['Model'])]
-dataframe_for_tranmission_nan['Transmission'].groupby([dataframe_for_tranmission_nan['Model']]).unique()
-crosstab_for_tranmission_nan=pd.crosstab(dataframe_for_tranmission_nan.Model, dataframe_for_tranmission_nan.Transmission)
-maxValueIndex_for_transmission = crosstab_for_tranmission_nan.idxmax(axis=1)
-transmission_nan_elimination = maxValueIndex_Model.to_frame(name='Transmission')
-train.loc[train['Transmission'].isnull(),'Transmission'] = train['Model'].map(transmission_nan_elimination.Transmission)
+nan_df=train[train["Transmission"].isnull()][['Model','SubModel']]
+temp_df=train.loc[train['SubModel'].isin(nan_df['SubModel'])]
+temp_df['Transmission'].groupby([temp_df['Model']]).unique()
+c=pd.crosstab(temp_df.Model, temp_df.Transmission)
+maxValueIndex = c.idxmax(axis=1)
+lookup = maxValueIndex.to_frame(name='Transmission')
+train.loc[train['Transmission'].isnull(),'Transmission'] = train['Model'].map(lookup.Transmission)
 
-#by submodel
-model_submodel_nan_transmission=train[train["Transmission"].isnull()][['Model','SubModel']]
-dataframe_for_tranmission_nan_SubModel=train.loc[train['SubModel'].isin(model_submodel_nan_transmission['SubModel'])]
-dataframe_for_tranmission_nan_SubModel['Transmission'].groupby([dataframe_for_tranmission_nan_SubModel['SubModel']]).unique()
-crosstab_for_tranmission_nan_submodel=pd.crosstab(dataframe_for_tranmission_nan_SubModel.Model, dataframe_for_tranmission_nan_SubModel.Transmission)
-maxValueIndex_for_transmission_submodel = crosstab_for_tranmission_nan_submodel.idxmax(axis=1)
-transmission_nan_elimination_submodel = maxValueIndex_for_transmission_submodel.to_frame(name='Transmission')
-train.loc[train['Transmission'].isnull(),'Transmission'] = train['SubModel'].map(transmission_nan_elimination_submodel.Transmission)
-print('clean!')
 
 #3.5 We use the same grouping by approach for WheelType's NaN values
 print('cleaning nan variables for WheelType variable...')
 
 #We fix the first group of NaN values groupbing by Model
-model_submodel_make_trim_nan_wheeltype=train[train["WheelType"].isnull()][['Model','SubModel','Make','Trim']]
-dataframe_for_wheeltype_nan=train.loc[train['Model'].isin(model_submodel_make_trim_nan_wheeltype['Model'])]
-dataframe_for_wheeltype_nan['WheelType'].groupby([dataframe_for_wheeltype_nan['Model']]).unique()
-crosstab_for_wheeltype_nan=pd.crosstab(dataframe_for_wheeltype_nan.Model, dataframe_for_wheeltype_nan.WheelType)
-maxValueIndex_for_wheeltype= crosstab_for_wheeltype_nan.idxmax(axis=1)
-wheeltype_nan_elimination = maxValueIndex_for_wheeltype.to_frame(name='WheelType')
-train.loc[train['WheelType'].isnull(),'WheelType'] = train['Model'].map(wheeltype_nan_elimination.WheelType)
+nan_df=train[train["WheelType"].isnull()][['Model','SubModel','Make','Trim']]
+temp_df=train.loc[train['Model'].isin(nan_df['Model'])]
+temp_df['WheelType'].groupby([temp_df['Model']]).unique()
+c=pd.crosstab(temp_df.Model, temp_df.WheelType)
+maxValueIndex= c.idxmax(axis=1)
+lookup = maxValueIndex.to_frame(name='WheelType')
+train.loc[train['WheelType'].isnull(),'WheelType'] = train['Model'].map(lookup.WheelType)
 
 #We fix the second group of NaN values groupbing by SubModel
-dataframe_for_groupby_submodel_wheeltype=train.loc[train['SubModel'].isin(model_submodel_make_trim_nan_wheeltype['SubModel'])]
-dataframe_for_groupby_submodel_wheeltype['WheelType'].groupby([dataframe_for_groupby_submodel_wheeltype['SubModel']]).unique()
-crosstab_for_wheeltype_nan_submodel=pd.crosstab(dataframe_for_groupby_submodel_wheeltype.SubModel, dataframe_for_groupby_submodel_wheeltype.WheelType)
-maxValueIndex_for_wheeltype_submodel = crosstab_for_wheeltype_nan_submodel.idxmax(axis=1)
-wheeltype_nan_elimination_submodel = maxValueIndex_for_wheeltype_submodel.to_frame(name='WheelType')
-train.loc[train['WheelType'].isnull(),'WheelType'] = train['SubModel'].map(wheeltype_nan_elimination_submodel.WheelType)
+temp_df=train.loc[train['SubModel'].isin(nan_df['SubModel'])]
+temp_df['WheelType'].groupby([temp_df['SubModel']]).unique()
+c=pd.crosstab(temp_df.SubModel, temp_df.WheelType)
+maxValueIndex = c.idxmax(axis=1)
+lookup= maxValueIndex.to_frame(name='WheelType')
+train.loc[train['WheelType'].isnull(),'WheelType'] = train['SubModel'].map(lookup.WheelType)
 
 #We fix the third group of NaN values groupbing by Make
-dataframe_for_groupby_make_wheeltype=train.loc[train['Make'].isin(model_submodel_make_trim_nan_wheeltype['Make'])]
-dataframe_for_groupby_make_wheeltype['WheelType'].groupby([dataframe_for_groupby_make_wheeltype['Make']]).unique()
-crosstab_for_wheeltype_nan_make=pd.crosstab(dataframe_for_groupby_make_wheeltype.Make, dataframe_for_groupby_make_wheeltype.WheelType)
-maxValueIndex_for_wheeltype_make = crosstab_for_wheeltype_nan_make.idxmax(axis=1)
-wheeltype_nan_elimination_make = maxValueIndex_for_wheeltype_make.to_frame(name='WheelType')
-train.loc[train['WheelType'].isnull(),'WheelType'] = train['Make'].map(wheeltype_nan_elimination_make.WheelType)
+temp_df=train.loc[train['Make'].isin(nan_df['Make'])]
+temp_df['WheelType'].groupby([temp_df['Make']]).unique()
+c=pd.crosstab(temp_df.Make, temp_df.WheelType)
+maxValueIndex = c.idxmax(axis=1)
+lookup = maxValueIndex.to_frame(name='WheelType')
+train.loc[train['WheelType'].isnull(),'WheelType'] = train['Make'].map(lookup.WheelType)
 print('clean!')
 
 
@@ -158,38 +149,38 @@ print('clean!')
 print('cleaning nan variables for Size variable...')
 
 #First, we use Model to group by
-model_submodel_make_nan_size=train[train["Size"].isnull()][['Model','SubModel','Make']]
-dataframe_for_size_nan=train.loc[train['Model'].isin(model_submodel_make_nan_size['Model'])]
-dataframe_for_size_nan['Size'].groupby(
-    [dataframe_for_size_nan['Model']]).unique()
-crosstab_for_size_nan_model=pd.crosstab(dataframe_for_size_nan.Model, dataframe_for_size_nan.Size)
-maxValueIndex_for_size = crosstab_for_size_nan_model.idxmax(axis=1)
-size_nan_elimination_make = maxValueIndex_for_size.to_frame(name='Size')
-train.loc[train['Size'].isnull(),'Size'] = train['Model'].map(size_nan_elimination_make.Size)
+nan_df=train[train["Size"].isnull()][['Model','SubModel','Make']]
+temp_df=train.loc[train['Model'].isin(nan_df['Model'])]
+temp_df['Size'].groupby(
+    [temp_df['Model']]).unique()
+c=pd.crosstab(temp_df.Model, temp_df.Size)
+maxValueIndex = c.idxmax(axis=1)
+lookup = maxValueIndex.to_frame(name='Size')
+train.loc[train['Size'].isnull(),'Size'] = train['Model'].map(lookup.Size)
 
 #Secondly, we use Trim
-model_submodel_make_trim_nan_size=train[train["Size"].isnull()][['Model','SubModel','Make', 'Trim']]
-dataframe_groupby_trim_size=train.loc[train['Trim'].isin(model_submodel_make_trim_nan_size['Trim'])]
-dataframe_groupby_trim_size['Size'].groupby(
-    [dataframe_groupby_trim_size['Trim']]).unique()
-crosstab_trim_size=pd.crosstab(dataframe_groupby_trim_size.Trim, dataframe_groupby_trim_size.Size)
-maxValueIndex_for_size_trim = crosstab_trim_size.idxmax(axis=1)
-size_nan_elimination_trim = maxValueIndex_for_size_trim.to_frame(name='Size')
-train.loc[train['Size'].isnull(),'Size'] = train['Trim'].map(size_nan_elimination_trim.Size)
+nan_df=train[train["Size"].isnull()][['Model','SubModel','Make', 'Trim']]
+temp_df=train.loc[train['Trim'].isin(nan_df['Trim'])]
+temp_df['Size'].groupby(
+    [temp_df['Trim']]).unique()
+c=pd.crosstab(temp_df.Trim, temp_df.Size)
+maxValueIndex = c.idxmax(axis=1)
+lookup = maxValueIndex.to_frame(name='Size')
+train.loc[train['Size'].isnull(),'Size'] = train['Trim'].map(lookup.Size)
 
 print('clean!')
 
 #3.7 We use the same grouping by approach for TopThreeAmericanName's NaN values
 
 print('cleaning nan variables for TopThreeAmericanName variable...')
-make_nan_topthree=train[train["TopThreeAmericanName"].isnull()][['Make']]
-dataframe_groupby_topthree=train.loc[train['Make'].isin(make_nan_topthree['Make'])]
-dataframe_groupby_topthree['TopThreeAmericanName'].groupby(
-    [dataframe_groupby_topthree['Make']]).unique()
-crosstab_topthree_make=pd.crosstab(dataframe_groupby_topthree.Make, dataframe_groupby_topthree.TopThreeAmericanName)
-maxValueIndex_for_topthree = crosstab_topthree_make.idxmax(axis=1)
-topthree_nan_elimination_make = maxValueIndex_for_topthree.to_frame(name='TopThreeAmericanName')
-train.loc[train['TopThreeAmericanName'].isnull(),'TopThreeAmericanName'] = train['Make'].map(topthree_nan_elimination_make.TopThreeAmericanName)
+nan_df=train[train["TopThreeAmericanName"].isnull()][['Make']]
+temp_df=train.loc[train['Make'].isin(nan_df['Make'])]
+temp_df['TopThreeAmericanName'].groupby(
+    [temp_df['Make']]).unique()
+c=pd.crosstab(temp_df.Make, temp_df.TopThreeAmericanName)
+maxValueIndex = c.idxmax(axis=1)
+lookup = maxValueIndex.to_frame(name='TopThreeAmericanName')
+train.loc[train['TopThreeAmericanName'].isnull(),'TopThreeAmericanName'] = train['Make'].map(lookup.TopThreeAmericanName)
 print('clean!')
 
 
@@ -240,4 +231,4 @@ for name, num_na in zip(sum_null.index, train_for_nan):
     if num_na > 0:
         print("{}: {}".format(name, num_na))
 time.sleep(7)
-print('creating the cleaned document...')
+print('creating the clean document...')

@@ -1,9 +1,8 @@
 #First of all, we need to import/install all the packages needed for this session
 
-import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt
-import scipy.stats as stats
+
 
 
 
